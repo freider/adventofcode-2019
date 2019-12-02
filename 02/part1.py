@@ -4,8 +4,8 @@ prg[1] = 12
 prg[2] = 2
 
 
-for i in range(len(prg) // 4):
-    instr = prg[i * 4:(i + 1) * 4]
+for i in range(0, len(prg), 4):
+    instr = prg[i:i + 4]
     if instr[0] == 1:
         prg[instr[3]] = prg[instr[1]] + prg[instr[2]]
     elif instr[0] == 2:
