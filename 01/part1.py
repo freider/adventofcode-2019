@@ -1,5 +1,5 @@
 inp = []
-for line in open("input.txt"):
+for line in open("01/input.txt"):
     n = int(line.strip())
     inp.append(n)
 
