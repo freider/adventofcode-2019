@@ -18,7 +18,7 @@ q = [(start, 0)]
 visited = set()
 
 while q:
-    n, d = q.pop()
+    n, d = q.pop(0)
     if n == end:
         print(d)
         break
