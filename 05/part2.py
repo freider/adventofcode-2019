@@ -77,12 +77,10 @@ def exec(prg, inv):
         raw_op = prg[i]
         opcode = raw_op % 100
         op = INSTR[opcode]
-        print(f"OPCODE {opcode}")
         raw_mode = str(raw_op)[:-2]
         modes = ("0" * (3 - len(raw_mode)) + raw_mode)[::-1]
         try:
             i = op(prg, modes, i, inv, outv)
-            print(f"Going to {i}")
         except ExecutionEnded:
             break
     return outv
