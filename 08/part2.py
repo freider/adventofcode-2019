@@ -2,24 +2,19 @@ import numpy as np
 
 img_data = open("08/input.txt").read().strip()
 
-dim = (25, 6)
+dim = (6, 25)
+layersize = dim[0] * dim[1]
 
 intbuf = [int(i) for i in img_data]
-layers = np.array(intbuf).reshape(-1, dim[0]*dim[1])
 
-stacked = np.zeros(dim[0]*dim[1], dtype=int) + 2
-for l in layers:    
-    for i, v in enumerate(stacked):
-        if v == 2:
-            stacked[i] = l[i]
+layers = np.array(intbuf, dtype=int).reshape(-1, layersize)
+img = layers[np.argmax(layers != 2, axis=0), range(len(layers[0]))]
 
-def paint(x):
-    if x == 2:
-        return "/"
-    elif x == 1:
-        return " "
-    else:
-        return "#"
+paint = {
+    2: "/",
+    1: "█",
+    0: " ",
+}
 
-for l in stacked.reshape(6, 25):
-    print(''.join(paint(x) for x in l))
+for l in img.reshape(*dim):
+    print(''.join(paint[x] for x in l))
