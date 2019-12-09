@@ -7,6 +7,7 @@ class ExecutionEnded(Exception):
 class WaitingForInput(Exception):
     pass
 
+
 class MachineState:
     def __init__(self, prg, inv):
         self.prg = prg
@@ -78,11 +79,11 @@ class MachineState:
         self.write(l, int(self.read(j) == self.read(k)))
 
     def get_cursor_pos(self, rawpos, mode):
-        if mode == "0":
+        if mode == 0:
             return self.prg[rawpos]
-        elif mode == "1":
+        elif mode == 1:
             return rawpos
-        elif mode == "2":
+        elif mode == 2:
             return self.prg[rawpos] + self.rel
         else:
             print(f"BAD MODE {mode}")
@@ -93,9 +94,9 @@ class MachineState:
         opcode = raw_op % 100
         op, numargs = self.INSTR[opcode]
         raw_mode = str(raw_op)[:-2]
-        modes = ("0" * (numargs - len(raw_mode)) + raw_mode)[::-1]
+        modes = ((raw_op//10000)%10, (raw_op//1000) % 10, (raw_op//100) % 10)
         args = range(self.i+1, self.i+1+numargs)
-        cursors = [self.get_cursor_pos(*t) for t in zip(args, modes)]
+        cursors = (self.get_cursor_pos(*t) for t in zip(args, modes))
 
         op(*cursors)
         if i == self.i:
@@ -115,8 +116,7 @@ class MachineState:
             except ExecutionEnded:
                 break
             finally:
-                while self.outv:
-                    yield self.outv.popleft()
+                yield from iter(self.outv)
 
     def chain_input(self, ing):
         self.inv = itertools.chain(self.inv, ing)
