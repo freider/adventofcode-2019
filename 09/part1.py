@@ -1,5 +1,5 @@
 import itertools
-
+from collections import deque
 
 class ExecutionEnded(Exception):
     pass
@@ -8,10 +8,10 @@ class WaitingForInput(Exception):
     pass
 
 class MachineState:
-    def __init__(self, prg, inv, outv):
+    def __init__(self, prg, inv):
         self.prg = prg
         self.inv = inv
-        self.outv = outv
+        self.outv = deque()
         self.i = 0
         self.rel = 0
         self.INSTR = {
@@ -31,7 +31,6 @@ class MachineState:
         memsize = len(self.prg)
         if j >= memsize:
             expand_by = max(j - memsize + 1, 2 * memsize)
-            print(f"expanding memory by {expand_by} (total {memsize + expand_by})")
             self.prg += [0] * expand_by
     
     def read(self, j):
@@ -88,28 +87,40 @@ class MachineState:
         else:
             print(f"BAD MODE {mode}")
 
+    def tick(self):
+        i = self.i
+        raw_op = self.prg[i]
+        opcode = raw_op % 100
+        op, numargs = self.INSTR[opcode]
+        raw_mode = str(raw_op)[:-2]
+        modes = ("0" * (numargs - len(raw_mode)) + raw_mode)[::-1]
+        args = range(self.i+1, self.i+1+numargs)
+        cursors = [self.get_cursor_pos(*t) for t in zip(args, modes)]
+
+        op(*cursors)
+        if i == self.i:
+            self.i += 1 + numargs
+
     def exec(self):
         while 1:
-            i = self.i
-            raw_op = self.prg[i]
-            opcode = raw_op % 100
-            op, numargs = self.INSTR[opcode]
-            raw_mode = str(raw_op)[:-2]
-            modes = ("0" * (numargs - len(raw_mode)) + raw_mode)[::-1]
-            args = range(self.i+1, self.i+1+numargs)
-            cursors = [self.get_cursor_pos(*t) for t in zip(args, modes)]
-
             try:
-                op(*cursors)
-                if i == self.i:
-                    self.i += 1 + numargs
+                self.tick()
             except ExecutionEnded:
                 break
+
+    def iter_output(self):
+        while 1:
+            try:
+                self.tick()
+            except ExecutionEnded:
+                break
+            finally:
+                while self.outv:
+                    yield self.outv.popleft()
 
 
 clean_prg = [int(n) for n in open("09/input.txt").read().split(",")]
 
-buf = []
-m = MachineState(clean_prg.copy(), [2], buf)
-m.exec()
-print(buf)
+m = MachineState(clean_prg.copy(), [2])
+for o in m.iter_output():
+    print(o)
