@@ -27,10 +27,19 @@ class MachineState:
             99: (self.abrt, 0)
         }
 
+    def checkmem(self, j):
+        memsize = len(self.prg)
+        if j >= memsize:
+            expand_by = max(j - memsize + 1, 2 * memsize)
+            print(f"expanding memory by {expand_by} (total {memsize + expand_by})")
+            self.prg += [0] * expand_by
+    
     def read(self, j):
+        self.checkmem(j)
         return self.prg[j]
 
     def write(self, j, v):
+        self.checkmem(j)
         self.prg[j] = v
 
     def adjustrel(self, j):
@@ -98,25 +107,7 @@ class MachineState:
                 break
 
 
-def run(machine_states):
-    while 1:
-        for r, ms in enumerate(machine_states):
-            #print(f"using {ms.inv}")
-            try:
-                ms.exec()
-            except WaitingForInput:
-                pass
-            else:
-                #print(f"Halting {r}")
-                if r == len(machine_states)-1:
-                    return
-
-def link_machines(machine_states):
-    for i, m in enumerate(machine_states):
-        m.outv = machine_states[(i+1) % len(machine_states)].inv
-
-
-clean_prg = [int(n) for n in open("09/input.txt").read().split(",")] + [0 for x in range(10000)]
+clean_prg = [int(n) for n in open("09/input.txt").read().split(",")]
 
 buf = []
 m = MachineState(clean_prg.copy(), [2], buf)
