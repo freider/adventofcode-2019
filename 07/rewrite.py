@@ -121,16 +121,7 @@ class MachineState:
     def chain_input(self, ing):
         self.inv = itertools.chain(self.inv, ing)
 
-
-def link_machines(machine_states):
-    for i, m in enumerate(machine_states[1:], 1):
-        m.chain_input(machine_states[i-1].iter_output())
-    out = machine_states[-1].iter_output()
-    out1, out2 = itertools.tee(out, 2)
-    machine_states[0].chain_input(out1)
-    return out2
-
-
+    
 clean_prg = [int(n) for n in open("07/input.txt").read().split(",")]
 
 
@@ -142,15 +133,15 @@ for phases in itertools.permutations(range(5, 10)):
         for i, p in enumerate(phases)
     ]
     machine_states[0].chain_input(iter([0]))
-    out = link_machines(machine_states)
 
-    for o in out:
-        pass
-    v = o
+    for i, m in enumerate(machine_states):
+        m.chain_input(machine_states[i-1].iter_output())
+
+    machine_states[4].exec()
+    v = machine_states[4].outv.pop()
 
     if v > best:
         best = v
         best_phases = phases
 
 print(best, best_phases)
-
