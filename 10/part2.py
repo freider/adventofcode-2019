@@ -1,4 +1,3 @@
-import math
 map = [line.strip() for line in open("10/input.txt")]
 w = len(map[0])
 h = len(map)
@@ -23,11 +22,21 @@ def get_dirs(y, x):
             dy, dx = (j-y)//g, (i-x)//g
             yield dy, dx
 
+def comp(p):
+    (y, x) = p
+    if y <= 0:
+        if x >= 0:
+            return (1, y/x if x is not 0 else -1)
+        else:
+            return (4, y/x)
+    else:
+        if x >= 0:
+            return (2, y/x if x is not 0 else 1)
+        else:
+            return (3, y/x)
 
 def laser(y, x, n=200):
-    dirs = set(get_dirs(y, x))
-    dirs = sorted(dirs, key=lambda d: -(math.atan2(d[1], d[0]) + 2 * math.pi))
-
+    dirs = sorted(set(get_dirs(y, x)), key=comp)
     removed = set()
     while 1:
         for dy, dx in dirs:
