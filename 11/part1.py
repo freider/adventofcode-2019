@@ -7,24 +7,25 @@ color = {}
 clean_prg = [int(x) for x in open("11/input.txt").read().strip().split(",")]
 
 def drawer(ins):
-    current_pos = np.array([0,0])
-    dir = np.array([-1, 0])
+    current_pos = (0,0)
+    dir = (-1, 0)
     try:
         while 1:
-            yield color.get(tuple(current_pos), 0)
+            yield color.get(current_pos, 0)
             col = next(ins)
             dirchange = next(ins)
-            color[tuple(current_pos)] = col
+            color[current_pos] = col
             if dirchange == 0:
-                dir = np.array([-dir[1], dir[0]])
+                dir = (-dir[1], dir[0])
             elif dirchange == 1:
-                dir = np.array([dir[1], -dir[0]])
+                dir = (dir[1], -dir[0])
             else:
                 print("bad dir")
-            current_pos += dir
+            current_pos = tuple(np.array(current_pos) + np.array(dir))
 
     except StopIteration:
         print("program stopped")
+
 
 q = deque()
 m = Machine(clean_prg, q)
