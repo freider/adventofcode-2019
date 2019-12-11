@@ -1,5 +1,5 @@
-from lib.machine import IterMachine
-from collections import defaultdict
+from lib.machine import Machine
+from collections import deque
 
 import numpy as np
 
@@ -26,7 +26,9 @@ def drawer(ins):
     except StopIteration:
         print("program stopped")
 
-m = IterMachine(clean_prg, None)
-m.inv = drawer(m.iter_output())
-m.exec()
+q = deque()
+m = Machine(clean_prg, q)
+for col in drawer(m.iter_output()):
+    q.append(col)
+
 print(len(color))

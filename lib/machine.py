@@ -8,10 +8,11 @@ class WaitingForInput(Exception):
     pass
 
 class Machine:
-    def __init__(self, prg, inv):
+    def __init__(self, prg, inv=None):
         self.prg = prg
-        self.inv = inv
+        self.inv = inv if inv is not None else deque()
         self.outv = deque()
+        self._started = False
         self.i = 0
         self.rel = 0
         self.INSTR = {
@@ -49,7 +50,7 @@ class Machine:
         if not self.inv:
             raise WaitingForInput()
 
-        self.prg[j] = self.inv.pop(0)
+        self.prg[j] = self.inv.popleft()
 
     def outp(self, j):
         o = self.prg[j]
@@ -95,7 +96,12 @@ class Machine:
         if i == self.i:
             self.i += 1 + numargs
 
+    def prep_execution(self):
+        assert not self._started, "Execution already started"
+        self._started = True
+
     def exec(self):
+        self.prep_execution()
         while 1:
             try:
                 self.tick()
@@ -103,6 +109,7 @@ class Machine:
                 break
 
     def iter_output(self):
+        self.prep_execution()
         while 1:
             try:
                 self.tick()
@@ -113,6 +120,6 @@ class Machine:
                     yield self.outv.popleft()
 
 class IterMachine(Machine):
+    # machine using iterator input
     def inp(self, j):
         self.prg[j] = next(self.inv)
-
