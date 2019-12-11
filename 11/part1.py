@@ -33,3 +33,7 @@ for col in drawer(m.iter_output()):
     q.append(col)
 
 print(len(color))
+from lib.npdraw import draw, sparse_to_array
+
+draw(sparse_to_array(color))
+

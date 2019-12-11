@@ -115,7 +115,7 @@ class MachineState:
 
 clean_prg = [int(n) for n in open("09/input.txt").read().split(",")]
 
-m = MachineState(clean_prg.copy(), [2])
+m = MachineState(clean_prg.copy(), [1])
 for o in m.iter_output():
     print(o)
 

@@ -1,6 +1,7 @@
 import numpy as np
 import collections
 from lib.machine import Machine, IterMachine
+from lib.npdraw import draw, sparse_to_array
 
 
 color = {}
@@ -32,16 +33,5 @@ color[(0, 0)] = 1
 for current_color in drawer(m.iter_output()):
     inputq.append(current_color)
 
-minx, maxx = (1e10, -1e10)
-miny, maxy = (1e10, -1e10)
-for coord, col in color.items():
-    minx = min(minx, coord[1])
-    miny = min(miny, coord[0])
-    maxx = max(maxx, coord[1])
-    maxy = max(maxy, coord[0])
-
-for i in range(miny, maxy + 1): 
-    row = ''.join([
-        "#" if color.get((i, j)) else " " 
-        for j in range(minx, maxx + 1)])
-    print(row)
+pic = sparse_to_array(color)
+draw(pic)

@@ -72,7 +72,10 @@ class Machine:
 
     def get_cursor_pos(self, rawpos, mode):
         if mode == 0:
-            return self.prg[rawpos]
+            try:
+                return self.prg[rawpos]
+            except IndexError:
+                print(f"err {rawpos} {self.prg[self.i]} {self.i}")
         elif mode == 1:
             return rawpos
         elif mode == 2:
@@ -86,11 +89,11 @@ class Machine:
         opcode = raw_op % 100
         op, numargs = self.INSTR[opcode]
         
-        cursors = [
-            self.get_cursor_pos(i+1, (raw_op//100) % 10),
-            self.get_cursor_pos(i+2, (raw_op//1000) % 10),
-            self.get_cursor_pos(i+3, (raw_op//10000) % 10)
-        ][:numargs]
+        cursors = [self.get_cursor_pos(j, m) for j, m in (
+            (i+1, (raw_op//100) % 10),
+            (i+2, (raw_op//1000) % 10),
+            (i+3, (raw_op//10000) % 10)
+        )[:numargs]]
         self.checkmem(max(cursors + [i]))
         op(*cursors)
         if i == self.i:
@@ -119,7 +122,11 @@ class Machine:
                 while self.outv:
                     yield self.outv.popleft()
 
+
 class IterMachine(Machine):
     # machine using iterator input
     def inp(self, j):
         self.prg[j] = next(self.inv)
+
+    def chain_input(self, ing):
+        self.inv = itertools.chain(self.inv, ing)
