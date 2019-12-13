@@ -122,6 +122,11 @@ class Machine:
                 while self.outv:
                     yield self.outv.popleft()
 
+    def copy(self, inv=None):
+        inst = self.__class__(self.prg.copy(), inv)
+        inst.i = self.i
+        inst.rel = self.rel
+        return inst
 
 class IterMachine(Machine):
     # machine using iterator input
