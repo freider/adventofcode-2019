@@ -47,8 +47,3 @@ def build(ing, n, inventory):
             return s, new_inventory
 
 print(build("FUEL", 1, defaultdict(int)))
-#print()
-#start = defaultdict(int)
-# start["A"] = 1
-# start["B"] = 1
-#print(build("AB", 1, start))
