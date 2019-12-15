@@ -1,7 +1,7 @@
 import numpy as np
 from numpy import array as V
 from lib.npdraw import draw, sparse_to_array
-from lib.machine import Machine, IterMachine
+from lib.machine import Machine, IterMachine, WaitingForInput
 from lib.parse import ReParse
 from collections import defaultdict
 import itertools
@@ -34,7 +34,7 @@ map[(0,0)] = 0
 oxygen = None
 
 def explore(op):
-    global curpos, oxygen
+    global curpos, oxygen, stop
     trypos = None
     it = 0
     while 1:
@@ -46,10 +46,8 @@ def explore(op):
                 yield d
                 next(op)
         except:
+            # no unexplored path
             print("Fully explored")
-            write_adjlist(g, "15/found.adjlist")
-            with open("15/map.json", "w") as fp:
-                fp.write(json.dumps(map))
             break
     
         # test directions
@@ -89,11 +87,12 @@ tiles = {
     0: " ",
     1: "#",
 }
+
+# run loop
 try:
     for it, o in enumerate(it2):
-        if it % 50000 == 0:
-            draw(sparse_to_array(map), charmap=tiles)
-except:
+        pass
+except WaitingForInput:
     pass
 
 draw(sparse_to_array(map), charmap=tiles)

@@ -131,7 +131,10 @@ class Machine:
 class IterMachine(Machine):
     # machine using iterator input
     def inp(self, j):
-        self.prg[j] = next(self.inv)
+        try:
+            self.prg[j] = next(self.inv)
+        except StopIteration:
+            raise WaitingForInput()
 
     def chain_input(self, ing):
         self.inv = itertools.chain(self.inv, ing)
