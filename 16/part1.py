@@ -45,4 +45,4 @@ t = s.copy()
 for i in range(100):
     t = list(trans(t))
 
-print(''.join(str(c) for c in t[:8]))
+print(''.join(str(c) for c in t))
