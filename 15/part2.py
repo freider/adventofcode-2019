@@ -25,22 +25,24 @@ def getdirnr(dir):
         if (foo == dir).all():
             return d
 
-curpos = np.array([0,0])
+curpos = (0, 0)
 
 g = DiGraph()
-g.add_edge((0,0), "untested")
-map[(0,0)] = 0
+g.add_edge(curpos, "untested")
+map[curpos] = 0
 
 oxygen = None
+
+def addtup(a, b):
+    return tuple(x + y for x, y in zip(a, b))
 
 def explore(op):
     global curpos, oxygen, stop
     trypos = None
-    it = 0
     while 1:
         # find untested
         try:
-            for p in shortest_path(g, tuple(curpos), "untested")[1:-1]:
+            for p in shortest_path(g, curpos, "untested")[1:-1]:
                 d = getdirnr(np.array(p) - curpos)
                 curpos = p[:]
                 yield d
@@ -52,41 +54,34 @@ def explore(op):
     
         # test directions
         for d, dir in enumerate(dirs, 1):
-            trypos = curpos + dir
-            trypos_t = tuple(trypos)
-            if trypos_t not in map:
+            trypos = addtup(curpos, dir)
+            if trypos not in map:
                 break
         else:
-            g.remove_edge(tuple(curpos), "untested")
+            g.remove_edge(curpos, "untested")
             continue
         
         # untested direction trypos/d
         yield d
         i = next(op)
-        curpos_t = tuple(curpos)
         if i == 0:
             # hit a wall
-            map[trypos_t] = 1
+            map[trypos] = 1
         else:
-            map[trypos_t] = 0
-            g.add_edge(trypos_t, "untested")
-            g.add_edge(curpos_t, trypos_t)
-            g.add_edge(trypos_t, curpos_t)
+            map[trypos] = 0
+            g.add_edge(trypos, "untested")
+            g.add_edge(curpos, trypos)
+            g.add_edge(trypos, curpos)
             curpos = trypos[:]
             if i == 2:
-                oxygen = trypos_t
-                print("found home", trypos_t)
+                oxygen = trypos
+                print("found home", trypos)
         
 
 m = IterMachine(clean_prg, None)
 
 it1, it2 = itertools.tee(m.iter_output())
 m.inv = explore(it1)
-
-tiles = {
-    0: " ",
-    1: "#",
-}
 
 # run loop
 try:
@@ -95,7 +90,7 @@ try:
 except WaitingForInput:
     pass
 
-draw(sparse_to_array(map), charmap=tiles)
+draw(sparse_to_array(map))
 
 g.remove_node("untested")
 longest = max(shortest_path_length(g, oxygen).values())
