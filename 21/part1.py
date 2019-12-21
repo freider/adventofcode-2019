@@ -26,11 +26,10 @@ m = Machine(clean_prg.copy(), q)
 def main():
     out = []
     instr = [
-        "NOT A T",   
-        "NOT B J",
-        "OR T J",
-        "NOT C T",
-        "OR T J",
+        "OR A J",   
+        "AND B J",
+        "AND C J",
+        "NOT J J",
         "AND D J"
     ]
     for i in instr:

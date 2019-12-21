@@ -21,15 +21,7 @@ def sendword(s):
 m = Machine(clean_prg.copy(), q)
 
 
-#d and ((not a) or (not b) or (not c))
-
-#d and (not (a and b and c)) and not (not e and not g)
-
-"NOT E T"
-"NOT G J"
-"AND T J"
-"NOT J J"
-
+#d and (not (a and b and c)) and not (not e and not h)
 
 def main():
     out = []
@@ -41,8 +33,7 @@ def main():
         # RESET J
         "AND H J",  # guaranteed false
         # OLD BELOW
-        "NOT J J",
-        "AND A J",
+        "OR A J",   
         "AND B J",
         "AND C J",
         "NOT J J",
