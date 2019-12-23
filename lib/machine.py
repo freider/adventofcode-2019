@@ -122,6 +122,18 @@ class Machine:
                 while self.outv:
                     yield self.outv.popleft()
 
+    def io(self):
+        while 1:
+            try:
+                self.tick()
+            except WaitingForInput:
+                yield None
+            except ExecutionEnded:
+                break
+            finally:
+                while self.outv:
+                    yield self.outv.popleft()
+
     def copy(self, inv=None):
         inst = self.__class__(self.prg.copy(), inv)
         inst.i = self.i
