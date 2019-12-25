@@ -2,7 +2,8 @@ import numpy as np
 default_charmap = {
     0: " ",
     1: "█",
-    2: "/"
+    2: "/",
+    3: "o"
 }
 
 def sparse_to_array(coord_dict):
